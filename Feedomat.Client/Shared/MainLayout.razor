@@ -1,0 +1,35 @@
+﻿@inherits LayoutComponentBase
+@inject IAuthenticationService authenticationService
+@inject NavigationManager navigationManager
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <AuthorizeView>
+            <Authorized>
+                <div class="top-row px-4">
+                    <h4><b>Hello, @context.User.Identity.Name </b></h4>
+                    <button class="btn btn-danger" @onclick="Logout">Logout</button>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code{
+    private async Task Logout()
+    {
+        await authenticationService.Logout();
+        navigationManager.NavigateTo("/", true);
+    }
+}

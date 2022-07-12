@@ -1,0 +1,16 @@
+﻿
+<MudPaper Style="text-align:center">
+    <img src="@Image"/>
+    <MudText Typo="Typo.h6">@Title</MudText>
+    <MudText Typo="Typo.body1">@Summary</MudText>
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public string Summary { get; set; }
+    [Parameter]
+    public string Image { get; set; }
+}

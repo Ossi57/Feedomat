@@ -1,0 +1,38 @@
+﻿@page "/feeds"
+@inject HttpClient httpClient
+@inject IFeedService feedService
+@attribute [Authorize]
+
+@inject IJSRuntime theJavaScriptEngine
+
+<h1>Feeds</h1>
+
+@if (SyndicationFeed != null)
+{
+    <MudGrid>
+        @foreach (var item in SyndicationFeed.Items)
+        {
+            <MudItem xs="4">
+                <FeedEntryComponent Title="@item.Title.Text" Summary="@item.Summary.Text" Image="@RetrieveImageUrl(item.Links)" />
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+
+
+@code{
+    private SyndicationFeed SyndicationFeed { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SyndicationFeed = await feedService.GetSyndicationFeed();
+    }
+
+    private string RetrieveImageUrl(Collection<SyndicationLink> syndicationLinks)
+    {
+        var links = syndicationLinks.Where(link => link.Uri.ToString().Contains("jpg"));
+
+        return links.FirstOrDefault().Uri.ToString();
+    }
+}

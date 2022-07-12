@@ -1,0 +1,69 @@
+﻿@page "/"
+@inject IAuthenticationService authenticationService
+@inject NavigationManager navigationManager
+@inject IJSRuntime theJavaScriptEngine
+
+<MudContainer Class="d-flex justify-center align-center">
+    <MudPaper Class="pa-16 ma-2" Elevation="3">
+        <MudItem>
+            <MudText Style="text-align:center" Typo="Typo.h4">Login</MudText>
+        </MudItem>
+        <MudItem>
+            <MudTextField Style="height:40px;" @bind-Value="UserName" Label="Amount" Variant="Variant.Text" Adornment="Adornment.Start" />
+            <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Text" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="PasswordIconVisibilityClick" />
+        </MudItem>
+        <MudItem Class="d-flex justify-center">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Login">Login</MudButton>
+        </MudItem>
+    </MudPaper>
+</MudContainer>
+
+@code{
+    private string UserName { get; set; }
+    private string Password { get; set; }
+    private InputType PasswordInput { get; set; } = InputType.Password;
+    private string PasswordInputIcon { get; set; } = Icons.Material.Filled.VisibilityOff;
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationState { get; set; }
+
+    private bool showPassword;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var auth = await AuthenticationState;
+        if (authenticationService.User != null || auth.User.Identity.IsAuthenticated)
+        {
+            navigationManager.NavigateTo("/feeds");
+        }
+    }
+
+    private void PasswordIconVisibilityClick()
+    {
+        if (showPassword)
+        {
+            showPassword = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            showPassword = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+
+    private async Task Login()
+    {
+        try
+        {
+            await authenticationService.Login(UserName, Password);
+            navigationManager.NavigateTo("/feeds");
+        }
+        catch (Exception e)
+        {
+            await theJavaScriptEngine.InvokeVoidAsync("alert", e.Message);
+            StateHasChanged();
+        }
+    }
+}
