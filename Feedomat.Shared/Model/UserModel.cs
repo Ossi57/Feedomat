@@ -1,5 +1,4 @@
-﻿using System;
-namespace Feedomat.Shared.Model
+﻿namespace Feedomat.Shared.Model
 {
     public class UserModel
     {
